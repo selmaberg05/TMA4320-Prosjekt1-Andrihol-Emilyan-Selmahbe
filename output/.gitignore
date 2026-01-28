@@ -1,0 +1,4 @@
+# Media files, you dont want to commit your plots
+*.pdf
+*.png
+*.gif
