@@ -32,7 +32,10 @@ def data_loss(
     #######################################################################
 
     # Placeholder initialization — replace this with your implementation
-    data_loss_val = None
+    
+    T_pred = forward(nn_params,x,y,t,cfg)
+    data_loss_val = jnp.mean((T_pred-T_true)**2)
+
 
     #######################################################################
     # Oppgave 4.2: Slutt (se også ic_loss)
@@ -63,7 +66,9 @@ def ic_loss(
     #######################################################################
 
     # Placeholder initialization — replace this with your implementation
-    ic_loss_val = None
+    t = jnp.full_like(x, cfg.t_min) 
+    T_pred = forward(nn_params,x,y,t,cfg)
+    ic_loss_val = jnp.mean((T_pred - cfg.T_outside) ** 2)
 
     #######################################################################
     # Oppgave 4.2: Slutt (se også data_loss)
@@ -90,7 +95,35 @@ def physics_loss(pinn_params, interior_points, cfg: Config):
     #######################################################################
 
     # Placeholder initialization — replace this with your implementation
+    
+   # Placeholder initialization — replace this with your implementation
     physics_loss_val = None
+    def _pde_residual_scalar(pinn_params, x, y, t, cfg):
+
+        def T_fn(x, y, t):
+            return forward(pinn_params["nn"], x, y, t, cfg)
+        
+        T_t = grad(T_fn, 2)(x, y, t)
+        T_xx = grad(grad(T_fn, 0),0)(x, y, t)
+        T_yy = grad(grad(T_fn, 1),1)(x, y, t)
+
+        grad_T = T_xx + T_yy
+
+        alpha = jnp.exp(pinn_params["log_alpha"])
+        power = jnp.exp(pinn_params["log_power"])
+
+        Iq = cfg.is_source(x,y)
+        q = power * Iq
+
+        residuals = T_t - alpha * grad_T - q
+
+        return residuals
+    residuals = vmap(
+        lambda xi, yi, ti: _pde_residual_scalar(pinn_params, xi, yi, ti, cfg))(x, y, t)
+
+    physics_loss_val = jnp.mean(residuals**2)
+    
+
 
     #######################################################################
     # Oppgave 5.2: Slutt
@@ -112,7 +145,7 @@ def bc_loss(pinn_params: dict, bc_points, cfg: Config) -> jnp.ndarray:
     """
     x, y, t = bc_points[:, 0], bc_points[:, 1], bc_points[:, 2]
     nx, ny = bc_points[:, 3], bc_points[:, 4]
-
+ 
     def _bc_residual_scalar(pinn_params, x, y, t, nx, ny, cfg: Config):
         """Compute Robin BC residual: -k * grad(T) . n - h * (T - T_out) = 0.
 

@@ -2,6 +2,7 @@
 
 import jax.numpy as jnp
 import numpy as np
+import matplotlib.pyplot as plt
 
 from .config import Config
 from .fdm import solve_heat_equation
@@ -24,9 +25,10 @@ def generate_training_data(
     #######################################################################
     # Oppgave 3.3: Start
     #######################################################################
+    
+    x,y,t,T_fdm = solve_heat_equation(cfg)
+    sensor_data = _generate_sensor_data(x,y,t,T_fdm,cfg)
 
-    # Placeholder initialization — replace this with your implementation
-    x, y, t, T_fdm, sensor_data = None, None, None, None, None
 
     #######################################################################
     # Oppgave 3.3: Slutt

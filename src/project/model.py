@@ -37,6 +37,7 @@ def init_nn_params(
 
 def init_pinn_params(cfg: Config, seed: int | None = None):
     """Initialize network parameters and learnable scalars."""
+
     key = jax.random.key(cfg.seed if seed is None else seed)
     key, nn_key, scalars_key = jax.random.split(key, 3)
 
@@ -45,7 +46,16 @@ def init_pinn_params(cfg: Config, seed: int | None = None):
     #######################################################################
 
     # Placeholder initialization — replace this with your implementation
-    pinn_params = {}
+      
+    k1, k2, k3, k4 = jax.random.split(scalars_key, 4)
+    nn_params = init_nn_params(cfg,nn_key) #nn_key? eller vanlig key
+    pinn_params = {"nn": nn_params,
+                   "log_alpha" : jax.random.normal(k1, (1,)),
+                   "log_k" : jax.random.normal(k2, (1,)),
+                   "log_h" :jax.random.normal(k3, (1,)),
+                   "log_power" :jax.random.normal(k4, (1,))} 
+
+
 
     #######################################################################
     # Oppgave 5.1: Slutt
@@ -84,8 +94,23 @@ def forward(
     # Oppgave 4.1: Start
     #######################################################################
 
+    # Det meste av koden står i oppgaveteksten
+
     # Placeholder initialization — replace this with your implementation
-    out = None
+    
+    x_norm = (x - cfg.x_min) / (cfg.x_max - cfg.x_min)
+    y_norm = (y - cfg.y_min) / (cfg.y_max - cfg.y_min)
+    t_norm = (t - cfg.t_min) / (cfg.t_max - cfg.t_min)
+
+    a = jnp.stack([x_norm, y_norm, t_norm], axis = -1)
+    
+    for w,b in nn_params[:-1]: # Hidden layers
+        a = jnp.tanh(a @ w + b) 
+
+    w_out,b_out = nn_params[-1] # Output layer
+    a = a @ w_out + b_out
+
+    out = a.squeeze()
 
     #######################################################################
     # Oppgave 4.1: Slutt
