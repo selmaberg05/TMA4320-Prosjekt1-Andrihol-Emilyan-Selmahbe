@@ -2,6 +2,7 @@
 
 import jax.numpy as jnp
 import numpy as np
+from tests.conftest import cfg
 
 from .config import Config
 from .fdm import solve_heat_equation
@@ -26,7 +27,10 @@ def generate_training_data(
     #######################################################################
 
     # Placeholder initialization — replace this with your implementation
-    x, y, t, T_fdm, sensor_data = None, None, None, None, None
+    x, y, t, T_fdm = solve_heat_equation(cfg)
+    sensor_data = _generate_sensor_data(x, y, t, T_fdm, cfg)
+
+
 
     #######################################################################
     # Oppgave 3.3: Slutt

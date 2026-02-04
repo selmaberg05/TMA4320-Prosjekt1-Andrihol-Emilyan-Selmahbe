@@ -35,6 +35,21 @@ def solve_heat_equation(
 
     # Placeholder initialization — replace this with your implementation
     T = np.zeros((cfg.nt, cfg.nx, cfg.ny))
+    T[0, :, :] = cfg.T_outside #initial condition
+    A=_build_matrix(cfg, dx, dy, dt) #bygger matrisa A
+
+
+    for k in range(cfg.nt-1): #iterere over hele "rommet" i tiden
+        T_nå=T[k,:,:] #temperaturen i nåværende tidssteg
+        t_neste=t[k+1] #neste tidssteg
+
+        b=_build_rhs(cfg, T_nå, X, Y, dx, dy, dt, t_neste) #bygger høyresiden b
+
+        T_neste_etasje=np.linalg.solve(A, b) #løser A*T^(k+1)=b, der T^(k+1) er lagret som 1D vektor. 1D vektor med lengde nx*ny. Inneholder temperaturen i alle punkter ved neste tidssteg t^k+1.
+        #rekkefølgen er: først alle y, så neste x.
+        T[k+1, :, :]=T_neste_etasje.reshape(cfg.nx, cfg.ny) #omformer 1D vektor til 2D matrise og lagerer i T
+        
+    
 
     #######################################################################
     # Oppgave 3.2: Slutt
