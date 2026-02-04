@@ -1,0 +1,23 @@
+# Include the prosjekt.pdf
+!prosjekt.pdf
+
+# MacOS specific
+.DS_Store
+
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Caching
+.pytest_cache
+.ruff_cache
+
+# AI
+.claude

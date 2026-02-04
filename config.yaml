@@ -1,0 +1,72 @@
+# Configuration for PINN Room Heating Simulation
+
+# Spatial domain (meters)
+domain:
+  x_min: 0.0
+  x_max: 10.0
+  y_min: 0.0
+  y_max: 5.0
+
+# Temporal domain (hours)
+time:
+  t_min: 0.0
+  t_max: 24.0
+
+# Physical parameters
+physics:
+  alpha: 0.25           # Thermal diffusivity
+  k: 0.04               # Thermal conductivity
+  h: 0.00               # Heat transfer coefficient (0 = perfectly insulated walls)
+  T_outside: 0.0        # Outside temperature (constant)
+
+# Heat source configuration
+source:
+  locations:
+    - [5.0, 2.5]        # Heat source position (x, y)
+    # - [1.0, 1.0]        # Additional heat source position
+  sizes:
+    - 0.5                # Heat source size (meters)
+    # - 0.3                # Additional heat source size
+
+  strength: 15.0         # Heat source strength (degrees/hour)
+
+# Discretization
+grid:
+  nx: 50                # Spatial points in x (set to 100 for better resolution)
+  ny: 25                # Spatial points in y (set to 50 for better resolution)
+  nt: 50                # Time steps
+
+# Sensor configuration
+sensors:
+  measure_rate: 1.0     # Hours between measurements
+  noise_std: 0.5        # Measurement noise (std dev in degrees)
+
+  locations:
+    - [5.0, 2.5]        # Center of room
+    # At the center and corner of walls
+    - [5.0, 5.0]
+    - [5.0, 0.0]
+    - [0.0, 2.5]
+    - [10.0, 2.5]
+    - [0.0, 0.0]
+    - [0.0, 5.0]
+    - [10.0, 0.0]
+    - [10.0, 5.0]
+
+# Training parameters
+training:
+  layer_sizes: [3, 32, 32, 1]
+  learning_rate: 0.001
+  num_epochs: 5000
+  seed: 42
+
+  # Loss weights
+  lambda_physics: 1.0
+  lambda_ic:  1.0
+  lambda_bc: 1.0
+  lambda_data: 1.0
+
+  # Sampling
+  num_collocation: 4096
+  num_ic: 512
+  num_bc: 512
