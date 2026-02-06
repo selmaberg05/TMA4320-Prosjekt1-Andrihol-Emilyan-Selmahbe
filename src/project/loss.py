@@ -97,31 +97,36 @@ def physics_loss(pinn_params, interior_points, cfg: Config):
     # Oppgave 5.2: Start
     #######################################################################
 
-    # Placeholder initialization — replace this with your implementation
-    physics_loss_val = None
     def _pde_residual_scalar(pinn_params, x, y, t, cfg):
 
+        # Returnerer temperaturprediksjon
         def T_fn(x, y, t):
             return forward(pinn_params["nn"], x, y, t, cfg)
-        
+
+        # Dobbelt- og enkeltderiverer
         T_t = grad(T_fn, 2)(x, y, t)
         T_xx = grad(grad(T_fn, 0),0)(x, y, t)
         T_yy = grad(grad(T_fn, 1),1)(x, y, t)
 
+        # Beregner gradienten 
         grad_T = T_xx + T_yy
 
+        # Returnerer paramtere
         alpha = jnp.exp(pinn_params["log_alpha"])
         power = jnp.exp(pinn_params["log_power"])
 
+        # Bestmmer posisjon til varmekilde og ut regner ut vamrekilde q
         Iq = cfg.is_source(x,y)
         q = power * Iq
 
         residuals = T_t - alpha * grad_T - q
 
         return residuals
+        
     residuals = vmap(
         lambda xi, yi, ti: _pde_residual_scalar(pinn_params, xi, yi, ti, cfg))(x, y, t)
 
+    # Regner ut tap med MSE
     physics_loss_val = jnp.mean(residuals**2)
     
 
