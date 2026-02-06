@@ -111,11 +111,11 @@ def physics_loss(pinn_params, interior_points, cfg: Config):
         # Beregner gradienten 
         grad_T = T_xx + T_yy
 
-        # Returnerer paramtere
+        # Returnerer parametre
         alpha = jnp.exp(pinn_params["log_alpha"])
         power = jnp.exp(pinn_params["log_power"])
 
-        # Bestmmer posisjon til varmekilde og ut regner ut vamrekilde q
+        # Bestemmer posisjon til varmekilde og ut regner ut varmekilde q
         Iq = cfg.is_source(x,y)
         q = power * Iq
 
