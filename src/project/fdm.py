@@ -3,7 +3,7 @@
 import numpy as np
 
 from .config import Config
-
+#hei
 
 def solve_heat_equation(
     cfg: Config,
