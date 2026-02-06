@@ -65,7 +65,9 @@ def ic_loss(
     # Oppgave 4.2: Start
     #######################################################################
 
-    # Placeholder initialization — replace this with your implementation
+    #Evaluerer modellen ved t = t_min for å beregne tap for initialbetingelse
+    #Bruker t til å predikere temperatur og beregner tap med MSE
+    
     t = jnp.full_like(x, cfg.t_min) 
     T_pred = forward(nn_params,x,y,t,cfg)
     ic_loss_val = jnp.mean((T_pred - cfg.T_outside) ** 2)
