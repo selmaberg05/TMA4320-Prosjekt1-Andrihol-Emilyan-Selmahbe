@@ -1,4 +1,5 @@
-#Lag et script for å plotte data
+# Lager et eget script til å plotte sensordata
+# Bruker koden fra run_fdm.py som utgangspunkt og endrer parametre
 
 import matplotlib.pyplot as plt
 from project import (
@@ -8,16 +9,18 @@ from project import (
 
 def main():
     cfg = load_config("config.yaml")
-    x, y, t, T_fdm, sensor_data = generate_training_data(cfg)
+    x, y, t, T_fdm, sensor_data = generate_training_data(cfg) # Henter inn parametre
 
-    num_sensor = len(cfg.sensor_locations) # Antall sensorer (9)
+    num_sensor = len(cfg.sensor_locations) # Henter ut antall sensorer fra configuration-filen, som i utgangspunktet er lik 9 sensorer
 
-    for i in range(9): # Plotter for hver sensor, men blir mest oversiktlig med 4, kan prøve seg frem
-        start = i * 25 # Plotter for 24 timer per sensor (feks 0-24 og 25-)
+    # Plotter sensordata i en graf
+    
+    for i in range(num_sensor): # Kan plotte for alle 9 sensorer, men plottet blir mer oversiktlig med for eksempel 4, siden sensor 4-9 har ganske like målinger
+        start = i * 25 # Plotter for 24 timer per sensor, altså fra 0-24 og 25-49 timer osv.
         end = (i + 1) * 25
 
-        time = sensor_data[start:end, 2] 
-        temp = sensor_data[start:end, 3]
+        time = sensor_data[start:end, 2] # Henter ut tid fra vektoren med ulik sensordata
+        temp = sensor_data[start:end, 3] # Henter ut temperatur fra vektoren med ulik sensordata
 
         plt.plot(time, temp, marker='o')
 
