@@ -42,7 +42,7 @@ def train_nn(
         total_loss = cfg.lambda_data * L_data + cfg.lambda_ic * L_ic #Vektene styrer prioritering av tapskomonentene, definert i config-fil
         return total_loss, (L_data, L_ic) #returnerer total tap og tuple med enkeltkomponentene
 
-    #Regner verdi av objektivfunksjon og gradient
+    #Regner verdi av tapsfunksjonene og gradienten
     value_and_grad = jax.jit(jax.value_and_grad(objective_fn, has_aux=True)) # jit brukes for raskere kjøring
 
     #Lager en pen "progress-bar"
@@ -51,7 +51,7 @@ def train_nn(
         ic_epoch, key = sample_ic(key, cfg)
         (total_loss, (L_data, L_ic)), grads = value_and_grad(nn_params) # Beregner totalt tap og gradienter
 
-        # Bruker adam-step funksjonen for å oppdaterer parametrne fra NN for hver epoke
+        # Bruker adam-step funksjonen for å oppdaterer parameterne fra NN for hver epoke
         nn_params, adam_state = adam_step(nn_params, grads, adam_state, lr=cfg.learning_rate) 
 
         #Lagrer tapsverdiene i dictionary
@@ -87,27 +87,31 @@ def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> tuple[dict, dict]:
     # Oppgave 5.3: Start
     #######################################################################
 
-    # Update the nn_params and losses dictionary
-    def objective_fn(pinn_params, interior_epoch, ic_epoch, bc_epoch):
+    # Definerer en total tapsfunksjon som skal minimeres
+    def objective_fn(pinn_params, interior_epoch, ic_epoch, bc_epoch): 
         nn_params = pinn_params["nn"]
         L_data = data_loss(nn_params, sensor_data, cfg)
         L_physics = physics_loss(pinn_params, interior_epoch, cfg)
         L_ic = ic_loss(nn_params, ic_epoch, cfg)
         L_bc = bc_loss(pinn_params,bc_epoch,cfg)
-        total_loss = cfg.lambda_data * L_data + cfg.lambda_physics * L_physics +cfg.lambda_ic * L_ic +cfg.lambda_bc * L_bc
+        total_loss = cfg.lambda_data * L_data + cfg.lambda_physics * L_physics +cfg.lambda_ic * L_ic +cfg.lambda_bc * L_bc #Vektene styrer prioritering av tapskomonentene, definert i config-fil
         return total_loss, (L_data,L_physics, L_ic, L_bc)
-    
-    value_and_grad = jax.jit(jax.value_and_grad(objective_fn, has_aux=True))
 
+    # Regner ut verdien av tapsfunksjonene og gradienten
+    value_and_grad = jax.jit(jax.value_and_grad(objective_fn, has_aux=True)) # jax.jit får koden til å kjøre raskere
+
+    #Lager en pen "progress-bar"
     from tqdm import tqdm
-    for _ in tqdm(range(cfg.num_epochs), desc="Training PINN"):
+    for _ in tqdm(range(cfg.num_epochs), desc="Training PINN"): 
         interior_epoch, key = sample_interior(key, cfg)
         ic_epoch, key = sample_ic(key, cfg)
         bc_epoch, key = sample_bc(key, cfg)
         (total_loss, (L_data, L_physics, L_ic, L_bc)), grads = value_and_grad(pinn_params,interior_epoch, ic_epoch, bc_epoch) 
 
+        # Bruker adam-step funksjonen for å oppdaterer parameterne fra NN og de fysiske parameterne for hver epoke
         pinn_params, opt_state = adam_step(pinn_params, grads, opt_state, lr=cfg.learning_rate)
 
+        #Lagrer tapsverdiene i dictionary
         losses["total"].append(total_loss)
         losses["data"].append(L_data)
         losses["physics"].append(L_physics)
