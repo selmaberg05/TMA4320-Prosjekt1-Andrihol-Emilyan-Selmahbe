@@ -20,7 +20,9 @@ def main():
     #######################################################################
     # Oppgave 4.4: Start
     #######################################################################
-
+    # Lager mappe under output til animasjon og plot
+    os.makedirs("output/nn", exist_ok=True)
+    
     # Definerer parametre
     x, y, t, T_fdm, sensor_data = generate_training_data(cfg)
     nn_params, loss = train_nn(sensor_data, cfg)
