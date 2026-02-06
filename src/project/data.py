@@ -1,5 +1,5 @@
 """Data generation utilities."""
-#HEI
+
 import jax.numpy as jnp
 import numpy as np
 from tests.conftest import cfg
