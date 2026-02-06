@@ -100,8 +100,8 @@ def forward(
     a = jnp.stack([x_norm, y_norm, t_norm], axis = -1)
 
     #Itererer gjennom skjulte lag, lærer ikke-lineær sammenheng mellom x, y, og t
-    for w,b in nn_params[:-1]: # SKjulte lag
-        a = jnp.tanh(a @ w + b) 
+    for w,b in nn_params[:-1]: # Skjulte lag
+        a = jnp.tanh(a @ w + b) # Legger på ikke-linearitet
 
     #Outputlag som gir temperaturprediksjon med lineær tranformasjon
     w_out,b_out = nn_params[-1] # Output-lag
