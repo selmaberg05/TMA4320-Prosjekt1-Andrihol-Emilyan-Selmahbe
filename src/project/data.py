@@ -26,7 +26,7 @@ def generate_training_data(
     # Oppgave 3.3: Start
     #######################################################################
 
-    # Placeholder initialization — replace this with your implementation
+    #Henter ut data til å generere plot
     x, y, t, T_fdm = solve_heat_equation(cfg)
     sensor_data = _generate_sensor_data(x, y, t, T_fdm, cfg)
 
