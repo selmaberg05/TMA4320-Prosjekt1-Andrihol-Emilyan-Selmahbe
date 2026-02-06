@@ -46,8 +46,8 @@ def main():
     create_animation(x, y, t, T_pred, title="NN", save_path="output/nn/nn_animation.gif")
 
     # Plotter differansen mellom temperatur fra numerisk løser og nevralt nettverk
-    plot_snapshots(x,y,t, T_fdm-T_pred,save_path="output/nn/nn_difference_snapshots.png")
-    create_animation(x, y, t, T_fdm-T_pred, title="NN", save_path="output/nn/nn_difference_animation.gif")
+    plot_snapshots(x,y,t, T_fdm-T_pred,save_path="output/nn/nn_vs_numsolver_snapshots.png")
+    create_animation(x, y, t, T_fdm-T_pred, title="NN", save_path="output/nn/nn_vs_numsolver_animation.gif")
     
     #######################################################################
     # Oppgave 4.4: Slutt
