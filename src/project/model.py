@@ -44,14 +44,14 @@ def init_pinn_params(cfg: Config, seed: int | None = None):
     # Oppgave 5.1: Start
     #######################################################################
 
-    # Placeholder initialization — replace this with your implementation
-    k1, k2, k3, k4 = jax.random.split(scalars_key, 4)
-    nn_params = init_nn_params(cfg,nn_key) #nn_key? eller vanlig key
+    k1, k2, k3, k4 = jax.random.split(scalars_key, 4) # Splitter opp keys slik at ikke alle parametrene får initialverdi
+    
+    nn_params = init_nn_params(cfg,nn_key) # Definerer parametre for NN ut i fra init_nn_params()
     pinn_params = {"nn": nn_params,
                    "log_alpha" : jax.random.normal(k1, (1,)),
                    "log_k" : jax.random.normal(k2, (1,)),
                    "log_h" :jax.random.normal(k3, (1,)),
-                   "log_power" :jax.random.normal(k4, (1,))} 
+                   "log_power" :jax.random.normal(k4, (1,))} # Definerer parametre som en dictionnary, med nn som parametrene fra det nevrale nettverket, og de fysiske parameterne med logaritmisk skala for at de skal være positive 
 
 
     #######################################################################
