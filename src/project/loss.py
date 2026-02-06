@@ -31,14 +31,16 @@ def data_loss(
     # Oppgave 4.2: Start
     #######################################################################
 
-    # Placeholder initialization — replace this with your implementation
+    #Predikerer temperatur med forward-funksjonen som itererer gjennom det nevrale nettverket 
+    #Bruker predikert temperatur til å beregne data-tap som MSE (gjennomsnittlig kvadraters tap)
+    
     T_pred = forward(nn_params,x,y,t,cfg)
     data_loss_val = jnp.mean((T_pred-T_true)**2)
 
     #######################################################################
     # Oppgave 4.2: Slutt (se også ic_loss)
     #######################################################################
-
+    
     return data_loss_val
 
 
