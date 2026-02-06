@@ -96,16 +96,18 @@ def forward(
     y_norm = (y - cfg.y_min) / (cfg.y_max - cfg.y_min)
     t_norm = (t - cfg.t_min) / (cfg.t_max - cfg.t_min)
 
-    Slår sammen variablene til 
+    #Slår sammen normaliserte variablene til en input-vektor
     a = jnp.stack([x_norm, y_norm, t_norm], axis = -1)
 
-    
-    for w,b in nn_params[:-1]: # Hidden layers
+    #Itererer gjennom skjulte lag, lærer ikke-lineær sammenheng mellom x, y, og t
+    for w,b in nn_params[:-1]: # SKjulte lag
         a = jnp.tanh(a @ w + b) 
 
-    w_out,b_out = nn_params[-1] # Output layer
+    #Outputlag som gir temperaturprediksjon med lineær tranformasjon
+    w_out,b_out = nn_params[-1] # Output-lag
     a = a @ w_out + b_out
 
+    #fjerner dimensjoner med størrelse 1
     out = a.squeeze()
 
     #######################################################################
