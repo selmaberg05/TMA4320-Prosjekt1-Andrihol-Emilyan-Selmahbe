@@ -35,22 +35,26 @@ def train_nn(
     # Oppgave 4.3: Start
     #######################################################################
 
-    # Update the nn_params and losses dictionary
+    #Beregener tapene for sensordata og initialbetingelser med funksjonene fra loss.py, kombineres til en objektivfunksjon 
     def objective_fn(nn_params):
         L_data = data_loss(nn_params, sensor_data, cfg)
         L_ic = ic_loss(nn_params, ic_epoch, cfg)
-        total_loss = cfg.lambda_data * L_data + cfg.lambda_ic * L_ic
-        return total_loss, (L_data, L_ic)
-    
-    value_and_grad = jax.value_and_grad(objective_fn, has_aux=True) 
+        total_loss = cfg.lambda_data * L_data + cfg.lambda_ic * L_ic #Vektene styrer prioritering av tapskomonentene, definert i config-fil
+        return total_loss, (L_data, L_ic) #returnerer total tap og tuple med enkeltkomponentene
 
+    #Regner verdi av objektivfunksjon og gradient
+    value_and_grad = jax.jit(jax.value_and_grad(objective_fn, has_aux=True)) # jit brukes for raskere kjøring
+
+    #Lager en pen "progress-bar"
     from tqdm import tqdm
-    for _ in tqdm(range(cfg.num_epochs), desc="Training NN"):
+    for _ in tqdm(range(cfg.num_epochs), desc="Training NN"): # Løkken kjøres for antall epoker
         ic_epoch, key = sample_ic(key, cfg)
-        (total_loss, (L_data, L_ic)), grads = value_and_grad(nn_params) 
+        (total_loss, (L_data, L_ic)), grads = value_and_grad(nn_params) # Beregner totalt tap og gradienter
 
-        nn_params, adam_state = adam_step(nn_params, grads, adam_state, lr=cfg.learning_rate)
+        # Bruker adam-step funksjonen for å oppdaterer parametrne fra NN for hver epoke
+        nn_params, adam_state = adam_step(nn_params, grads, adam_state, lr=cfg.learning_rate) 
 
+        #Lagrer tapsverdiene i dictionary
         losses["total"].append(total_loss)
         losses["data"].append(L_data)
         losses["ic"].append(L_ic)
