@@ -54,6 +54,14 @@ def solve_heat_equation(
     #######################################################################
     # Oppgave 3.2: Slutt
     #######################################################################
+    T = np.zeros((cfg.nt, cfg.nx, cfg.ny))
+    T[0,:,:] = cfg.T_outside
+    A = _build_matrix(cfg,dx,dy,dt)
+
+    for k in range(cfg.nt-1):
+        b = _build_rhs(cfg, T[k], X, Y, dx, dy, dt, t[k+1])
+        T_next = np.linalg.solve(A,b) #Treg?, faktoriserer A i hvert ledd
+        T[k+1,:,:] = T_next.reshape(cfg.nx,cfg.ny)
 
     return x, y, t, T
 
