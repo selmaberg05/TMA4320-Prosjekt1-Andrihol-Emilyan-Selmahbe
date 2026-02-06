@@ -51,8 +51,8 @@ def main():
     create_animation(x, y, t, T_pred_pinn, title="PINN", save_path="output/pinn/pinn_animation.gif")
 
     # Plotter differansen i temperatur mellom den numeriske løseren og PINN til refleksjonsspørsmål
-    plot_snapshots(x,y,t, (T_fdm-T_pred_pinn),save_path="output/pinn/pinn_vs_numsolution_snapshots.png",)
-    create_animation(x, y, t, (T_fdm-T_pred_pinn), title="PINN", save_path="output/pinn/pinn_vs_numsolution_animation.gif")
+    plot_snapshots(x,y,t, (T_fdm-T_pred_pinn),save_path="output/pinn/pinn_vs_numsolver_snapshots.png",)
+    create_animation(x, y, t, (T_fdm-T_pred_pinn), title="PINN", save_path="output/pinn/pinn_vs_numsolver_animation.gif")
 
     # Plotter differansen i temperatur mellom NN og PINN til refleksjonsspørsmål
     plot_snapshots(x,y,t, (T_pred_nn-T_pred_pinn),save_path="output/pinn/pinn_vs_nn_snapshots.png",)
